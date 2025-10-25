@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campo de Flores 💐</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #aee6ff 50%, #77dd77 50%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Comic Sans MS", cursive, sans-serif;
+    }
+
+    canvas {
+      border: 2px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .mensaje {
+      position: absolute;
+      font-size: 48px;
+      color: #ff4081;
+      text-shadow: 0 0 15px rgba(255, 0, 100, 0.8);
+      opacity: 0;
+      animation: aparecer 1.8s forwards;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    @keyframes aparecer {
+      0% { transform: translateY(20px) scale(0.5); opacity: 0; }
+      40% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+      100% { transform: translateY(-40px) scale(1); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="campo" width="900" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("campo");
+    const ctx = canvas.getContext("2d");
+    const flores = [];
+
+    // 🌸 Crear flor
+    function crearFlor(x, y) {
+      const petalos = Math.floor(Math.random() * 5) + 5;
+      const radioPetalo = 15 + Math.random() * 20;
+      const radioCentro = 6 + Math.random() * 6;
+      const colorPetalo = `hsl(${Math.random() * 360}, 80%, 70%)`;
+      const colorCentro = `hsl(${Math.random() * 360}, 90%, 50%)`;
+      flores.push({ x, y, petalos, radioPetalo, radioCentro, colorPetalo, colorCentro });
+    }
+
+    // 🌼 Dibujar flor
+    function dibujarFlor(flor) {
+      const { x, y, petalos, radioPetalo, radioCentro, colorPetalo, colorCentro } = flor;
+
+      ctx.save();
+      ctx.translate(x, y);
+
+      for (let i = 0; i < petalos; i++) {
+        const angulo = (i * 2 * Math.PI) / petalos;
+        const px = Math.cos(angulo) * radioPetalo;
+        const py = Math.sin(angulo) * radioPetalo;
+
+        ctx.beginPath();
+        ctx.fillStyle = colorPetalo;
+        ctx.ellipse(px, py, radioPetalo, radioPetalo / 2, angulo, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.fillStyle = colorCentro;
+      ctx.arc(0, 0, radioCentro, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // 🌿 Fondo
+    function dibujarFondo() {
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, "#aee6ff");
+      grad.addColorStop(0.5, "#ffffff");
+      grad.addColorStop(0.5, "#8ef28e");
+      grad.addColorStop(1, "#4caf50");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function dibujar() {
+      dibujarFondo();
+      flores.forEach(dibujarFlor);
+      requestAnimationFrame(dibujar);
+    }
+
+    // 🌸 Flores iniciales
+    for (let i = 0; i < 10; i++) {
+      crearFlor(Math.random() * canvas.width, Math.random() * (canvas.height - 100) + 100);
+    }
+
+    // 💬 Mensajes que se mostrarán por partes
+    const mensajes = [
+      ["Te", "quiero", "mucho", "mi", "karlita"],
+      ["Te", "amo", "mi", "melissa"]
+    ];
+
+    let mensajeActual = 0;
+    let palabraIndex = 0;
+
+    // 💖 Mostrar mensaje
+    function mostrarMensaje(texto) {
+      const msg = document.createElement("div");
+      msg.className = "mensaje";
+      msg.textContent = texto;
+
+      // 🌈 Posición aleatoria dentro del campo
+      const randomX = Math.random() * (window.innerWidth - 200);
+      const randomY = Math.random() * (window.innerHeight - 200);
+
+      msg.style.left = `${randomX}px`;
+      msg.style.top = `${randomY}px`;
+
+      document.body.appendChild(msg);
+
+      // 🌸 Elimina el texto después de 2 segundos
+      setTimeout(() => msg.remove(), 2200);
+    }
+
+    // 🎆 Evento clic → siguiente palabra (en lugar aleatorio)
+    canvas.addEventListener("click", () => {
+      const frase = mensajes[mensajeActual];
+      const palabra = frase[palabraIndex];
+
+      mostrarMensaje(palabra);
+
+      palabraIndex++;
+
+      // Si termina la frase → pasa a la siguiente
+      if (palabraIndex >= frase.length) {
+        palabraIndex = 0;
+        mensajeActual++;
+        if (mensajeActual >= mensajes.length) {
+          mensajeActual = 0;
+        }
+      }
+    });
+
+    dibujar();
+  </script>
+</body>
+</html>
