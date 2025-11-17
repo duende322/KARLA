@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 días contigo</title>
+<style>
+    :root{
+      --primary:#ff4b6e;
+      --bg:#ffffff;
+      --muted:#f5f5f5;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+      background: 
+          linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)),
+          url("fondo.jpg");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color:var(--muted);
+    }
+
+    .center{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100%;
+      flex-direction:column;
+      text-align:center;
+    }
+
+    h1{
+      font-size:2.2rem;
+      margin-bottom:20px;
+      color:white;
+      text-shadow:0 0 10px black;
+    }
+
+    .btn{
+      padding:15px 30px;
+      font-size:1.3rem;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      margin:10px;
+      transition:0.3s ease;
+      font-weight:bold;
+    }
+
+    #yes{
+      background:#ff6388;
+      color:white;
+    }
+
+    #no{
+      background:#ffffff;
+      color:#ff6388;
+    }
+
+    .heart{
+      position:fixed;
+      top:50%;
+      left:50%;
+      font-size:30px;
+      animation:fall 2s linear forwards;
+      pointer-events:none;
+    }
+
+    @keyframes fall{
+      0%{ transform:translate(-50%, -50%) scale(1); opacity:1; }
+      100%{ transform:translate(-50%, 300px) scale(0.3); opacity:0; }
+    }
+</style>
+</head>
+<body>
+
+<div class="center">
+  <h1 id="mainMsg">Hoy cumplimos 100 días juntos ❤️</h1>
+
+  <div style="background:white; padding:15px; border-radius:15px; width:280px; margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+      <h2 id="tituloFoto" style="color:#ff4b6e; margin-top:0;">Mi Amor ❤️</h2>
+      <img id="foto-area" src="gato.jpg" style="width:100%; border-radius:10px;">
+  </div>
+
+  <div>
+    <button id="yes" class="btn">Sí ❤️</button>
+    <button id="no" class="btn">No</button>
+  </div>
+</div>
+
+<script>
+let yesBtn = document.getElementById("yes");
+let noBtn = document.getElementById("no");
+let mainMsg = document.getElementById("mainMsg");
+let imgBox = document.getElementById("foto-area");
+let titulo = document.getElementById("tituloFoto");
+
+let noCount = 0;
+let yesCount = 0;
+
+// 👉 Lista de imágenes para NO
+const noImages = [
+  "gato5.jpg",
+  "gato2.jpg",
+  "gato3.jpg",
+  "gato4.jpeg",
+  "gato6.jpg"
+];
+
+// 👉 Textos para cada imagen NO
+const noTexts = [
+  "¿Segurita que no, mi niña linda? 🥺",
+  "Amorcito, no me digas que no 😳",
+  "Corazoncito, mira mi carita 😭",
+  "Mi cielo, tú me amas ¿sí o no? 😱",
+  "Ya no puedes decir que no 😍"
+];
+
+// 👉 Imagen y texto para SÍ
+const yesImages = ["si.jpg"];
+const yesText = "Gracias por decir que sí, mi amorcito ❤️";
+
+// 👉 Corazones animados
+function spawnHearts(amount){
+  for(let i=0;i<amount;i++){
+    let h = document.createElement("div");
+    h.classList.add("heart");
+    h.textContent = "💖";
+    h.style.left = Math.random()*100 + "%";
+    h.style.top = Math.random()*50 + "%";
+    document.body.appendChild(h);
+    setTimeout(()=> h.remove(),2000);
+  }
+}
+
+// Acción de SÍ
+yesBtn.addEventListener("click", () => {
+    yesCount++;
+    let idx = (yesCount - 1) % yesImages.length;
+
+    imgBox.src = yesImages[idx];
+    titulo.textContent = yesText;
+
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+
+    mainMsg.textContent = "¡Sabía que dirías que sí! ❤️";
+    spawnHearts(20);
+});
+
+// Acción de NO
+noBtn.addEventListener("click", () => {
+    noCount++;
+
+    let idx = (noCount - 1) % noImages.length;
+    imgBox.src = noImages[idx];
+    titulo.textContent = noTexts[idx];
+
+    // Botón sí crece
+    yesBtn.style.transform = `scale(${1 + noCount * 0.3})`;
+
+    // No se achica
+    noBtn.style.transform = `scale(${Math.max(1 - noCount * 0.15, 0.2)})`;
+
+    const msgs = [
+        "¿Segurita que no, amor? 🥺",
+        "Pero piénsalo bien mi vida 😳",
+        "No me hagas esto corazoncito 😭",
+        "Amor, tú me amas ¿verdad? 😱",
+        "Ya no puedes decir que no 😍"
+    ];
+
+    mainMsg.textContent = msgs[Math.min(noCount-1, 4)];
+
+    spawnHearts(6 + noCount * 2);
+
+    if(noCount >= 5){
+        noBtn.style.display = "none";
+        mainMsg.textContent = "Sabía que escogerías el SÍ 💘";
+    }
+});
+</script>
+
+</body>
+</html>
